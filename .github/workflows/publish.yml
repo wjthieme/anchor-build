@@ -1,0 +1,60 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    strategy:
+      matrix:
+        config:
+          - tags: "latest,v0.30,v0.30.1"
+            rustc: "v1.78.0"
+            node: "v22.8.0"
+            solana: "v1.18.17"
+            anchor: "v0.30.1"
+          - tags: "v0.30.0"
+            rustc: "v1.78.0"
+            node: "v22.8.0"
+            solana: "v1.18.17"
+            anchor: "v0.30.0"
+          - tags: "v0.29,v0.29.0"
+            rustc: "v1.78.0"
+            node: "v22.8.0"
+            solana: "v1.17.25"
+            anchor: "v0.29.0"
+      fail-fast: false
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Build Docker Image
+      run: |
+        tags=$(echo "${{ matrix.config.tags }}" | sed 's/,/ --tag ghcr.io\/wjthieme\/anchor-build:/g')
+        tags="--tag ghcr.io/wjthieme/anchor-build:$tags"
+        docker build \
+          --platform linux/x86_64 \
+          --build-arg RUSTC_VERSION=${{ matrix.config.rustc }} \
+          --build-arg NODE_VERSION=${{ matrix.config.node }} \
+          --build-arg SOLANA_CLI=${{ matrix.config.solana }} \
+          --build-arg ANCHOR_CLI=${{ matrix.config.anchor }} \
+          $tags .
+    - name: Push Docker Image
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      run: |
+        echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        docker push --all-tags ghcr.io/wjthieme/anchor-build

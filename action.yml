@@ -1,0 +1,29 @@
+name: 'Anchor Build Container'
+description: 'A container for building Anchor programs.'
+
+branding:
+  icon: anchor
+  color: blue
+
+inputs:
+  solana-key:
+    description: 'The private key to use for the solana sdk.'
+    required: false
+  solana-cluster:
+    description: 'The cluster to use for the solana sdk.'
+    required: false
+    default: 'devnet'
+  anchor-version:
+    description: 'The version of anchor to use.'
+    default: 'latest'
+  run:
+    description: 'The command(s) to run.'
+    default: 'anchor build'
+
+runs:
+  using: "docker"
+  image: "ghcr.io/wjthieme/anchor-build:${{ inputs.anchor-version }}"
+  args:
+    - ${{ inputs.solana-key }}
+    - ${{ inputs.solana-cluster }}
+    - ${{ inputs.run }}
