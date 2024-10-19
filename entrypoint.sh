@@ -1,20 +1,27 @@
 #!/bin/bash
 set -xeo pipefail
 
+# Set default network to devnet if $2 is empty or not defined
+if [ -z "$2" ]; then
+  NETWORK="devnet"
+else
+  NETWORK="$2"
+fi
+
 # Configure Solana
-solana config set --url "$2"
+solana config set --url "$NETWORK"
 
 # Configure Solana Key
-if [ -z "$1" ]; then
+if [ -z "$3" ]; then
   solana-keygen new --no-bip39-passphrase
 else
-  echo "$1" > ~/.config/solana/id.json
+  echo "$3" > ~/.config/solana/id.json
 fi
 
 # Airdrop Solana if on devnet
-if [ "$2" == "devnet" ]; then
+if [ "$NETWORK" == "devnet" ]; then
   solana airdrop 1 || true
 fi
 
 # Run the provided commands
-eval "$3"
+eval "$1"
