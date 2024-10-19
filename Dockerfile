@@ -35,7 +35,7 @@ RUN cargo install --git https://github.com/coral-xyz/anchor --tag ${ANCHOR_CLI} 
 
 # Build a dummy program to bootstrap the BPF SDK (doing this speeds up builds).
 RUN anchor init dummy && cd dummy && (anchor build || true)
-RUN rm -r /dummy
+RUN rm -r dummy
 
 # Set up the working directory
 RUN mkdir /workdir
