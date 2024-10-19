@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xeo pipefail
+set -eo pipefail
 
 # Set default network to devnet if $2 is empty or not defined
 if [ -z "$2" ]; then
@@ -24,4 +24,8 @@ if [ "$NETWORK" == "devnet" ]; then
 fi
 
 # Run the provided commands
-eval "$1"
+if [ -z "$1" ]; then
+  anchor build
+else
+  eval "$1"
+fi
