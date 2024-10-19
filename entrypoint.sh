@@ -12,7 +12,7 @@ else
 fi
 
 # Airdrop Solana if on devnet
-if [ "$1" ] && [ "$2" == "devnet" ]; then
+if [ "$2" == "devnet" ]; then
   solana airdrop 1 || true
 fi
 
