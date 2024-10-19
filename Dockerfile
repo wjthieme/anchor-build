@@ -12,25 +12,19 @@ ENV PATH="${HOME}/.local/share/solana/install/active_release/bin:${PATH}"
 ENV PATH="${HOME}/.nvm/versions/node/${NODE_VERSION}/bin:${PATH}"
 
 # Install base utilities.
-RUN mkdir -p /workdir && mkdir -p /tmp && \
-    apt-get update -qq && apt-get upgrade -qq && apt-get install -qq \
+RUN apt-get update -qq && apt-get upgrade -qq && apt-get install -qq \
     build-essential git curl wget jq pkg-config python3-pip \
     libssl-dev libudev-dev
 
 # Install rust.
 RUN curl "https://sh.rustup.rs" -sfo rustup.sh && \
-    sh rustup.sh --default-toolchain none -y && \
-    rustup install ${RUSTC_VERSION#v} && \
-    rustup default ${RUSTC_VERSION#v} && \
+    sh rustup.sh --default-toolchain ${RUSTC_VERSION#v} -y && \
     rustup component add rustfmt clippy
 
 # Install node / npm / yarn.
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.40.1/install.sh | bash
 ENV NVM_DIR="${HOME}/.nvm"
 RUN . $NVM_DIR/nvm.sh && \
-    nvm install ${NODE_VERSION} && \
-    nvm use ${NODE_VERSION} && \
-    nvm alias default node && \
     npm install -g yarn
 
 # Install Solana tools.
@@ -40,10 +34,11 @@ RUN sh -c "$(curl -sSfL https://release.anza.xyz/${SOLANA_CLI}/install)"
 RUN cargo install --git https://github.com/coral-xyz/anchor --tag ${ANCHOR_CLI} anchor-cli --locked
 
 # Build a dummy program to bootstrap the BPF SDK (doing this speeds up builds).
-RUN mkdir -p /tmp && cd /tmp && anchor init dummy && cd dummy && (anchor build || true)
-RUN rm -r /tmp/dummy
+RUN anchor init dummy && cd dummy && (anchor build || true)
+RUN rm -r /dummy
 
 # Set up the working directory
+RUN mkdir /workdir
 WORKDIR /workdir
 
 # Copy the entrypoint script
