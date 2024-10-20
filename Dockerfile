@@ -37,13 +37,13 @@ RUN cargo install --git https://github.com/coral-xyz/anchor --tag ${ANCHOR_CLI} 
 RUN anchor init dummy && cd dummy && (anchor build || true)
 RUN rm -r dummy
 
-# Set up the working directory
+# Set up the working directory.
 RUN mkdir /workdir
 WORKDIR /workdir
 
-# Copy the entrypoint script
+# Copy the entrypoint script.
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Define the entrypoint
+# Define the entrypoint.
 ENTRYPOINT ["/entrypoint.sh"]
