@@ -17,6 +17,7 @@ RUN apt-get update -qq && apt-get upgrade -qq && apt-get install -qq \
     libssl-dev libudev-dev
 
 # Install rust.
+ENV RUSTUP_TOOLCHAIN=${RUSTC_VERSION#v}
 RUN curl "https://sh.rustup.rs" -sfo rustup.sh && \
     sh rustup.sh --default-toolchain ${RUSTC_VERSION#v} -y && \
     rustup component add rustfmt clippy
