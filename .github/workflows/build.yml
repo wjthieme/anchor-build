@@ -50,8 +50,8 @@ jobs:
           --platform linux/x86_64 \
           --build-arg RUSTC_VERSION=${{ matrix.config.rustc }} \
           --build-arg NODE_VERSION=${{ matrix.config.node }} \
-          --build-arg SOLANA_CLI=${{ matrix.config.solana }} \
-          --build-arg ANCHOR_CLI=${{ matrix.config.anchor }} \
+          --build-arg SOLANA_VERSION=${{ matrix.config.solana }} \
+          --build-arg ANCHOR_VERSION=${{ matrix.config.anchor }} \
           $tags .
     - name: Push Docker Image
       if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
