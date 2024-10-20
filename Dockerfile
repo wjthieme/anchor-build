@@ -38,13 +38,13 @@ RUN npm install -g yarn
 # Build a dummy program to bootstrap the BPF SDK (doing this speeds up builds).
 RUN anchor init dummy && cd dummy && (anchor build || true) && cd .. && rm -r dummy
 
-# Set up the working directory
+# Set up the working directory.
 RUN mkdir /workdir
 WORKDIR /workdir
 
-# Copy the entrypoint script
+# Copy the entrypoint script.
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Define the entrypoint
+# Define the entrypoint.
 ENTRYPOINT ["/entrypoint.sh"]
